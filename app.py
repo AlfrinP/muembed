@@ -27,12 +27,12 @@ def fetch_github_data(username):
 @app.route('/embed/rank/<string:muid>')
 def get_muid(muid):
     data = fetch_queries(muid)
-    print(data)
     if data:
 
         # Background image
         image_path = "./assets/images/git.png" if data["github_username"] else "./assets/images/card.png"
-        
+
+              
         # Profile Pic
         image_url = data["profile_pic"]
         try:
@@ -283,7 +283,20 @@ def get_muid(muid):
         return response
 
     else:
-        return "No data"
+        no_user_image_path = "./assets/images/404card.png"
+
+        # Load the 'no_user' image
+        no_user_image = Image.open(no_user_image_path)
+        
+        # Create a response for the image
+        response = make_response()
+        image_bytes = BytesIO()
+        no_user_image.save(image_bytes, format='PNG')
+        response.data = image_bytes.getvalue()
+        response.headers['Content-Type'] = 'image/png'
+        return response
 
 if __name__ == '__main__':
+    app.debug = True
+
     app.run()
