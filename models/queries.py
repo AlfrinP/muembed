@@ -63,7 +63,7 @@ def fetch_queries(muid):
         rank_query = """
             SELECT total_karma.karma, user.mu_id
             FROM total_karma
-            INNER JOIN (
+            LEFT JOIN (
                 SELECT user_role_link.user_id
                 FROM user_role_link
                 INNER JOIN role ON role.id = user_role_link.role_id

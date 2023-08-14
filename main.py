@@ -296,7 +296,3 @@ def get_muid(muid):
         response.headers['Content-Type'] = 'image/png'
         return response
 
-if __name__ == '__main__':
-    app.debug = True
-
-    app.run()

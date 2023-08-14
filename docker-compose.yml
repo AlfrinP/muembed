@@ -1,0 +1,15 @@
+version: '3'
+services:
+  muembed:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: muembed
+    image: muembed
+    restart: always
+    ports:
+      - "8004:8000"
+    volumes:
+      - /var/log/muembed:/var/log/muembed
+    env_file:
+      - .env
