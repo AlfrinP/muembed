@@ -14,7 +14,7 @@ def fetch_queries(muid):
             role.title AS role,
             total_karma.karma,
             interest_group.name AS interest_group_name,
-            github.username,
+            socials.github,
             organization.code AS organization_code
         FROM
             user
@@ -23,13 +23,13 @@ def fetch_queries(muid):
         LEFT JOIN interest_group ON user_ig_link.ig_id = interest_group.id
         LEFT JOIN user_role_link ON user_role_link.user_id = user.id
         LEFT JOIN role ON role.id = user_role_link.role_id
-        LEFT JOIN github ON user.id = github.user_id
+        LEFT JOIN socials ON user.id = socials.user_id
         LEFT JOIN user_organization_link ON user.id = user_organization_link.user_id
         LEFT JOIN organization ON user_organization_link.org_id = organization.id
         WHERE user.mu_id = :mu_id;
     """
-    user_data = db.fetch_all_data(query, params={'mu_id': muid, 'org_type':OrgType.COLLEGE.value})
-    
+    user_data = db.fetch_all_data(query, params={'mu_id': muid, 'org_type': OrgType.COLLEGE.value})
+
     if user_data:
         data = {
             "mu_id": f"{user_data[0][0]}",
@@ -44,8 +44,9 @@ def fetch_queries(muid):
     else:
         return None
 
-
-    main_role = next((role for role in data["roles"] if role in [RolesType.STUDENT.value, RolesType.MENTOR.value, RolesType.ENABLER.value]), RolesType.MULEARNER.value)
+    main_role = next((role for role in data["roles"] if
+                      role in [RolesType.STUDENT.value, RolesType.MENTOR.value, RolesType.ENABLER.value]),
+                     RolesType.MULEARNER.value)
 
     if main_role in [RolesType.MENTOR.value, RolesType.ENABLER.value]:
         rank_query = """
@@ -77,7 +78,7 @@ def fetch_queries(muid):
         params = {'enabler': RolesType.ENABLER.value, "mentor": RolesType.MENTOR.value}
 
     rank_list = db.fetch_all_data(rank_query, params)
-    
+
     count = 0
     for x in rank_list:
         count += 1
@@ -87,4 +88,3 @@ def fetch_queries(muid):
             data["main_role"] = main_role
 
     return data
-    
