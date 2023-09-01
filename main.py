@@ -1,10 +1,13 @@
-import requests
-from flask import Flask, make_response
-from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
+
+import requests
+from PIL import Image, ImageDraw, ImageFont
+from flask import Flask, make_response
+
 from models.queries import fetch_queries
 
 app = Flask(__name__)
+
 
 # fetch GitHub data
 def fetch_github_data(username):
@@ -20,19 +23,19 @@ def fetch_github_data(username):
         commits_data = commits_response.json()
         return user_data, commits_data
     except requests.RequestException as e:
-        print("Error fetching GitHub data:", e) 
+        print("Error fetching GitHub data:", e)
         return None, None
 
 
 @app.route('/embed/rank/<string:muid>')
 def get_muid(muid):
     data = fetch_queries(muid)
+
     if data:
 
         # Background image
         image_path = "./assets/images/git.png" if data["github_username"] else "./assets/images/card.png"
 
-              
         # Profile Pic
         image_url = data["profile_pic"]
         try:
@@ -45,8 +48,8 @@ def get_muid(muid):
             avatar = BytesIO(requests.get(image_url).content)
 
         im = Image.open(avatar)
-        if im.size[0] < 256 or im.size[1] < 256:
-             im = im.resize((256, 256))
+        if im.size[0] < 725 or im.size[1] < 725:
+            im = im.resize((256, 256))
 
         bigsize = (im.size[0] * 3, im.size[1] * 3)
         mask = Image.new("L", bigsize, 0)
@@ -56,7 +59,6 @@ def get_muid(muid):
         im.putalpha(mask)
 
         im = im.resize((round(im.size[0] * 1.0), round(im.size[1] * 1.0)))
-
 
         # fonts
         font_med = "./assets/fonts/PlusJakartaSans-Medium.ttf"
@@ -73,12 +75,11 @@ def get_muid(muid):
 
         # Roles
         if data["github_username"]:
-            font = ImageFont.truetype(font_bold , size=70)
+            font = ImageFont.truetype(font_bold, size=70)
             draw.text((1, 750), data["main_role"], fill=ig_color, font=font)
         else:
-            font = ImageFont.truetype(font_bold , size=70)
+            font = ImageFont.truetype(font_bold, size=70)
             draw.text((1, 425), data["main_role"], fill=ig_color, font=font)
-
 
         # Name
         font = ImageFont.truetype(font_med, size=45)
@@ -207,13 +208,13 @@ def get_muid(muid):
                 current_position = start_position
                 y = start_position[1]
                 x = start_position[0]
-                font = ImageFont.truetype(font_med , size=26)
+                font = ImageFont.truetype(font_med, size=26)
                 commit_width, commit_height = font.getsize(str(total_commits))
                 commit_box_width = commit_width + 2 * padding
                 commit_box_height = 43
-                
+
                 draw.rounded_rectangle(
-                    [(x,y), (x + commit_box_width,y + commit_box_height)],
+                    [(x, y), (x + commit_box_width, y + commit_box_height)],
                     radius=5,
                     fill=box_color,
                 )
@@ -233,17 +234,17 @@ def get_muid(muid):
                 repo_width, repo_height = font.getsize(str(total_repos))
                 repo_box_width = repo_width + 2 * padding
                 repo_box_height = 43
-                
+
                 draw.rounded_rectangle(
-                    [(x,y), (x + repo_box_width,y + repo_box_height)],
+                    [(x, y), (x + repo_box_width, y + repo_box_height)],
                     radius=5,
                     fill=box_color,
                 )
 
                 text_x = x + (repo_box_width - repo_width) // 2
-                text_y = (y- 2) + (repo_box_height - repo_height) // 2
+                text_y = (y - 2) + (repo_box_height - repo_height) // 2
 
-                draw.text((text_x, text_y), str(total_repos), fill=name_color, font=font) 
+                draw.text((text_x, text_y), str(total_repos), fill=name_color, font=font)
 
                 # Draw name
                 font = ImageFont.truetype(font_med, size=32)
@@ -287,7 +288,7 @@ def get_muid(muid):
 
         # Load the 'no_user' image
         no_user_image = Image.open(no_user_image_path)
-        
+
         # Create a response for the image
         response = make_response()
         image_bytes = BytesIO()
@@ -295,4 +296,3 @@ def get_muid(muid):
         response.data = image_bytes.getvalue()
         response.headers['Content-Type'] = 'image/png'
         return response
-

@@ -15,7 +15,8 @@ def fetch_queries(muid):
             total_karma.karma,
             interest_group.name AS interest_group_name,
             socials.github,
-            organization.code AS organization_code
+            organization.code AS organization_code,
+            organization.org_type AS org_type
         FROM
             user
         LEFT JOIN total_karma ON user.id = total_karma.user_id
@@ -39,7 +40,8 @@ def fetch_queries(muid):
             "github_username": user_data[0][7],
             "org_code": list(set([row[8] for row in user_data if row[8]])),
             "roles": list(set([row[4] for row in user_data if row[4]])),
-            "ig_name": list(set([row[6] for row in user_data if row[6]]))
+            "ig_name": list(set([row[6] for row in user_data if row[6]])),
+            'org_types': list(set([row[9] for row in user_data if row[9]]))
         }
     else:
         return None
