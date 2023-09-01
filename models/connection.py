@@ -1,9 +1,11 @@
+from urllib.parse import quote_plus
+
+from decouple import config as decouple_config
 from sqlalchemy import create_engine
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import QueuePool
-from urllib.parse import quote_plus
-from decouple import config as decouple_config
+
 
 class DBConnection:
     def __init__(self, pool_size=5, max_overflow=10):
