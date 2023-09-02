@@ -26,7 +26,7 @@ def fetch_queries(muid):
         LEFT JOIN role ON role.id = user_role_link.role_id
         LEFT JOIN socials ON user.id = socials.user_id
         LEFT JOIN user_organization_link ON user.id = user_organization_link.user_id
-        LEFT JOIN organization ON user_organization_link.org_id = organization.id
+        LEFT JOIN organization ON user_organization_link.org_id = organization.id and org_type = :org_type
         WHERE user.mu_id = :mu_id;
     """
     user_data = db.fetch_all_data(query, params={'mu_id': muid, 'org_type': OrgType.COLLEGE.value})
