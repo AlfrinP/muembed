@@ -38,7 +38,6 @@ def get_muid(muid):
 
         # Profile Pic
         image_url = data["profile_pic"]
-        print(image_url)
         try:
             response = requests.get(image_url)
             response.raise_for_status()
