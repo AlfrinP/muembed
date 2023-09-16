@@ -284,6 +284,11 @@ def get_muid(muid):
         background.save(image_bytes, format='PNG')
         response.data = image_bytes.getvalue()
         response.headers['Content-Type'] = 'image/png'
+
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        response.headers['Cache-Control'] = 'public, max-age=0'
         return response
 
     else:
@@ -298,4 +303,9 @@ def get_muid(muid):
         no_user_image.save(image_bytes, format='PNG')
         response.data = image_bytes.getvalue()
         response.headers['Content-Type'] = 'image/png'
+
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        response.headers['Cache-Control'] = 'public, max-age=0'
         return response
