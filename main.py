@@ -48,8 +48,11 @@ def get_muid(muid):
             avatar = BytesIO(requests.get(image_url).content)
 
         im = Image.open(avatar)
+
         if im.size[0] < 725 or im.size[1] < 725:
-            im = im.resize((256, 256))
+            pass
+
+        im = im.resize((256, 256))
 
         bigsize = (im.size[0] * 3, im.size[1] * 3)
         mask = Image.new("L", bigsize, 0)
