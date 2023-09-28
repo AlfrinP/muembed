@@ -12,14 +12,14 @@ def fetch_queries(muid):
             user.last_name,
             user.profile_pic,
             role.title AS role,
-            total_karma.karma,
+            wallet.karma,
             interest_group.name AS interest_group_name,
             socials.github,
             organization.code AS organization_code,
             organization.org_type AS org_type
         FROM
             user
-        LEFT JOIN total_karma ON user.id = total_karma.user_id
+        LEFT JOIN wallet ON user.id = wallet.user_id
         LEFT JOIN user_ig_link ON user.id = user_ig_link.user_id
         LEFT JOIN interest_group ON user_ig_link.ig_id = interest_group.id
         LEFT JOIN user_role_link ON user_role_link.user_id = user.id
@@ -52,29 +52,29 @@ def fetch_queries(muid):
 
     if main_role in [RolesType.MENTOR.value, RolesType.ENABLER.value]:
         rank_query = """
-            SELECT total_karma.karma, user.mu_id
-            FROM total_karma
-            INNER JOIN user_role_link ON user_role_link.user_id = total_karma.user_id
+            SELECT wallet.karma, user.mu_id
+            FROM wallet
+            INNER JOIN user_role_link ON user_role_link.user_id = wallet.user_id
             INNER JOIN role ON role.id = user_role_link.role_id
-            INNER JOIN user ON user.id = total_karma.user_id
+            INNER JOIN user ON user.id = wallet.user_id
             WHERE role.title = :title
-            ORDER BY total_karma.karma DESC;
+            ORDER BY wallet.karma DESC;
 
         """
         params = {'title': main_role}
     else:
         rank_query = """
-            SELECT total_karma.karma, user.mu_id
-            FROM total_karma
+            SELECT wallet.karma, user.mu_id
+            FROM wallet
             LEFT JOIN (
                 SELECT user_role_link.user_id
                 FROM user_role_link
                 INNER JOIN role ON role.id = user_role_link.role_id
                 GROUP BY user_role_link.user_id
                 HAVING SUM(IF(role.title IN (:mentor, :enabler), 1, 0)) = 0
-            ) AS users ON total_karma.user_id = users.user_id
-            INNER JOIN user ON total_karma.user_id = user.id
-            ORDER BY total_karma.karma DESC;
+            ) AS users ON wallet.user_id = users.user_id
+            INNER JOIN user ON wallet.user_id = user.id
+            ORDER BY wallet.karma DESC;
 
         """
         params = {'enabler': RolesType.ENABLER.value, "mentor": RolesType.MENTOR.value}
