@@ -7,7 +7,7 @@ db = DBConnection()
 def fetch_queries(muid):
     query = """
         SELECT
-            user.mu_id,
+            user.muid,
             user.first_name,
             user.last_name,
             user.profile_pic,
@@ -27,13 +27,13 @@ def fetch_queries(muid):
         LEFT JOIN socials ON user.id = socials.user_id
         LEFT JOIN user_organization_link ON user.id = user_organization_link.user_id
         LEFT JOIN organization ON user_organization_link.org_id = organization.id and org_type = :org_type
-        WHERE user.mu_id = :mu_id;
+        WHERE user.muid = :muid;
     """
-    user_data = db.fetch_all_data(query, params={'mu_id': muid, 'org_type': OrgType.COLLEGE.value})
+    user_data = db.fetch_all_data(query, params={'muid': muid, 'org_type': OrgType.COLLEGE.value})
 
     if user_data:
         data = {
-            "mu_id": f"{user_data[0][0]}",
+            "muid": f"{user_data[0][0]}",
             "name": f"{user_data[0][1]} {user_data[0][2]}" if user_data[0][2] else user_data[0][1],
             "profile_pic": user_data[0][3],
             "karma": str(user_data[0][5]),
@@ -52,7 +52,7 @@ def fetch_queries(muid):
 
     if main_role in [RolesType.MENTOR.value, RolesType.ENABLER.value]:
         rank_query = """
-            SELECT wallet.karma, user.mu_id
+            SELECT wallet.karma, user.muid
             FROM wallet
             INNER JOIN user_role_link ON user_role_link.user_id = wallet.user_id
             INNER JOIN role ON role.id = user_role_link.role_id
@@ -64,7 +64,7 @@ def fetch_queries(muid):
         params = {'title': main_role}
     else:
         rank_query = """
-            SELECT wallet.karma, user.mu_id
+            SELECT wallet.karma, user.muid
             FROM wallet
             LEFT JOIN (
                 SELECT user_role_link.user_id
@@ -84,7 +84,7 @@ def fetch_queries(muid):
     count = 0
     for x in rank_list:
         count += 1
-        if x[1] == data["mu_id"]:
+        if x[1] == data["muid"]:
             data["rank"] = count
             data["score"] = int(x[0])
             data["main_role"] = main_role
