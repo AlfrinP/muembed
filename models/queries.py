@@ -8,8 +8,7 @@ def fetch_queries(muid):
     query = """
         SELECT
             user.muid,
-            user.first_name,
-            user.last_name,
+            user.full_name,
             user.profile_pic,
             role.title AS role,
             wallet.karma,
@@ -34,7 +33,7 @@ def fetch_queries(muid):
     if user_data:
         data = {
             "muid": f"{user_data[0][0]}",
-            "name": f"{user_data[0][1]} {user_data[0][2]}" if user_data[0][2] else user_data[0][1],
+            "name": f"{user_data[0][1]}",
             "profile_pic": user_data[0][3],
             "karma": str(user_data[0][5]),
             "github_username": user_data[0][7],
